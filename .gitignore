@@ -1,0 +1,28 @@
+# ===== Dependencies =====
+node_modules/
+
+# ===== Config & Env (thông tin bí mật) =====
+.env
+.env.*
+!.env.example
+config/*.env
+config/secrets*
+
+# ===== Test results (kết quả run tạm) =====
+reports/
+test-results/
+playwright-report/
+allure-results/
+allure-report/
+blob-report/
+*.log
+
+# ===== Playwright =====
+/playwright/.cache/
+storage-state*.json
+
+# ===== IDE / OS =====
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
