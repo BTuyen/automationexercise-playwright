@@ -26,3 +26,8 @@ storage-state*.json
 .idea/
 .DS_Store
 Thumbs.db
+
+# Playwright
+/playwright-report/
+/blob-report/
+/playwright/.auth/
