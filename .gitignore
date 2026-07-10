@@ -31,3 +31,6 @@ Thumbs.db
 /playwright-report/
 /blob-report/
 /playwright/.auth/
+
+# ===== Notes cá nhân (không up lên git) =====
+notes/
