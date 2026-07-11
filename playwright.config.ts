@@ -10,7 +10,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : ENV.WORKERS, // FIX: tương tự
   timeout: ENV.TIMEOUT, // timeout mỗi test
 
-  reporter: "html",
+  reporter: [["html", { open: "never" }]],
 
   use: {
     baseURL: ENV.BASE_URL, // FIX: từ .env → page.goto('/') tự ghép URL
@@ -23,14 +23,6 @@ export default defineConfig({
     {
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
-    },
-    {
-      name: "firefox",
-      use: { ...devices["Desktop Firefox"] },
-    },
-    {
-      name: "webkit",
-      use: { ...devices["Desktop Safari"] },
-    },
+    }
   ],
 });

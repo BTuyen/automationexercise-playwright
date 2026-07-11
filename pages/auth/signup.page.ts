@@ -25,6 +25,7 @@ export interface AddressInfo {
 
 export class SignupPage extends BasePage {
   readonly accountInfoForm = this.page.locator(".login-form"); // form "Enter Account Information" - dấu hiệu nhận biết "đang ở signup" (chỉ tới được qua flow LoginPage.signup(), không có URL riêng)
+  readonly accountCreatedHeading = this.page.locator("[data-qa='account-created']"); // heading "Account Created!" - test assert trước khi Continue
 
   private readonly titleMr = this.page.locator("#id_gender1");
   private readonly titleMrs = this.page.locator("#id_gender2");
@@ -88,5 +89,9 @@ export class SignupPage extends BasePage {
 
   async createAccount() {
     await this.createAccountButton.click();
+  }
+
+  async continueAfterAccountCreated() {
+    await this.continueButton.click();
   }
 }

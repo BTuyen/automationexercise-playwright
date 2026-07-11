@@ -1,0 +1,4 @@
+testcaseID,description,name,email,password
+TC_AUTH_04,Login voi user khong ton tai - expect error message,NotRegistered,notregistered_9f3a2b@example.com,WrongPass123!
+TC_AUTH_07,Signup email sai format - thieu ky tu @ (EP invalid class),Tuyen,hathibichtuyengmail.com,Password123!
+TC_AUTH_08,Signup email sai format - thieu domain (EP invalid class),Tuyen,hathibichtuyen@,Password123!

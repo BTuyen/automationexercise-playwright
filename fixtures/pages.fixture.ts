@@ -1,7 +1,7 @@
 import { test as base } from '@playwright/test';
 import { HomePage } from '../pages/home.page';
-import { LoginPage } from '../pages/Auth/login.page';
-import { SignupPage } from '../pages/Auth/signup.page';
+import { LoginPage } from '../pages/auth/login.page';
+import { SignupPage } from '../pages/auth/signup.page';
 
 type PageFixtures = {
   homePage: HomePage;
