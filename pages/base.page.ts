@@ -8,24 +8,41 @@ export abstract class BasePage {
   }
 
   get cartLink() {
-    return this.page.getByRole('link', { name: 'Cart' });
+    // exact: true - nếu không sẽ match luôn "View Cart" trong modal Added! (dù đã đóng, DOM vẫn còn)
+    return this.page.getByRole("link", { name: "Cart", exact: true });
+  }
+
+  get cartModal() {
+    return this.page.locator("#cartModal");
+  }
+  get modalViewCartLink() {
+    return this.cartModal.getByRole("link", { name: "View Cart" });
+  }
+  get modalContinueShoppingButton() {
+    return this.cartModal.getByRole("button", { name: "Continue Shopping" });
+  }
+  get addedToCartHeading() {
+    return this.cartModal.getByText("Added!");
+  }
+
+  get productsLink() {
+    return this.page.getByRole("link", { name: "Products" });
   }
 
   get logoutLink() {
-    return this.page.getByRole('link', { name: 'Logout' });
+    return this.page.getByRole("link", { name: "Logout" });
   }
 
   get deleteAccountLink() {
-    return this.page.getByRole('link', { name: 'Delete Account' });
+    return this.page.getByRole("link", { name: "Delete Account" });
   }
 
-  // Nút "Continue" dùng chung cho cả trang "Account Created!" và "Account Deleted!"
   get continueButton() {
     return this.page.locator("[data-qa='continue-button']");
   }
 
   get accountDeletedHeading() {
-    return this.page.getByText('Account Deleted!');
+    return this.page.getByText("Account Deleted!");
   }
 
   async goto(path: string) {

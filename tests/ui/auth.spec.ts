@@ -1,7 +1,6 @@
 import { expect, test } from '../../fixtures/pages.fixture';
 import { CSVHandling } from '../../helpers/csv-handler';
-import { LoginPage } from '../../pages/auth/login.page';
-import { SignupPage } from '../../pages/auth/signup.page';
+import { signupNewUser } from '../../helpers/signup-flow';
 import { generatePlusTagEmail, generateUser } from '../../utils/data-generator';
 
 // CSV chỉ chứa data TĨNH cho negative case (user không tồn tại, email sai format).
@@ -9,34 +8,6 @@ import { generatePlusTagEmail, generateUser } from '../../utils/data-generator';
 const csvFilePath = 'resources/testdata/users.csv';
 const testData = CSVHandling.readCSVFile(csvFilePath);
 const dataFor = (id: string) => testData.find((row) => row.testcaseID === id);
-
-// Flow đăng ký đầy đủ, dùng lại cho các test cần account tồn tại (Arrange trong test)
-async function signupNewUser(loginPage: LoginPage, signupPage: SignupPage, user: ReturnType<typeof generateUser>) {
-  await loginPage.goto();
-  await loginPage.signup(user.name, user.email);
-  await signupPage.fillAccountInfo({
-    title: user.title,
-    password: user.password,
-    day: user.day,
-    month: user.month,
-    year: user.year,
-    newsletter: user.newsletter,
-    optin: user.optin
-  });
-  await signupPage.fillAddressInfo({
-    firstName: user.firstName,
-    lastName: user.lastName,
-    company: user.company,
-    address1: user.address1,
-    address2: user.address2,
-    country: user.country,
-    state: user.state,
-    city: user.city,
-    zipcode: user.zipcode,
-    mobileNumber: user.mobileNumber
-  });
-  await signupPage.createAccount();
-}
 
 test.describe('Auth', () => {
   test('TC_AUTH_01 | should signup successfully with valid email', async ({ loginPage, signupPage }) => {
