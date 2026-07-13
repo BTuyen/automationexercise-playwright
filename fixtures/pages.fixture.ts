@@ -7,6 +7,10 @@ import { ProductDetailPage } from '../pages/product/product-detail.page';
 import { CheckoutPage } from '../pages/checkout/checkout.page';
 import { PaymentPage } from '../pages/checkout/payment.page';
 import { CartPage } from '../pages/cart/cart.page';
+import { ApiClient } from '../helpers/api-client';
+import { UserService } from '../services/user.service';
+import { ProductService } from '../services/product.service';
+import { ENV } from '../utils/env';
 
 type PageFixtures = {
   homePage: HomePage;
@@ -17,6 +21,8 @@ type PageFixtures = {
   cartPage: CartPage;
   checkoutPage: CheckoutPage;
   paymentPage: PaymentPage;
+  userService: UserService;
+  productService: ProductService;
 };
 
 export const test = base.extend<PageFixtures>({
@@ -57,6 +63,13 @@ export const test = base.extend<PageFixtures>({
   },
   paymentPage: async ({ page }, use) => {
     await use(new PaymentPage(page));
+  },
+  // dùng request context có sẵn của Playwright, không tự tạo context riêng
+  userService: async ({ request }, use) => {
+    await use(new UserService(new ApiClient(request, ENV.API_BASE_URL)));
+  },
+  productService: async ({ request }, use) => {
+    await use(new ProductService(new ApiClient(request, ENV.API_BASE_URL)));
   }
 });
 export { expect } from '@playwright/test';

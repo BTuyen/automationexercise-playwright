@@ -20,9 +20,20 @@ export default defineConfig({
   },
 
   projects: [
+    // API không cần browser - chạy 1 lần, không lặp lại theo từng browser project như UI
+    {
+      name: "api",
+      testMatch: /tests\/api/,
+    },
     {
       name: "chromium",
+      testMatch: /tests\/ui/,
       use: { ...devices["Desktop Chrome"] },
-    }
+    },
+    {
+      name: "firefox",
+      testMatch: /tests\/ui/,
+      use: { ...devices["Desktop Firefox"] },
+    },
   ],
 });

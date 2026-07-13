@@ -15,8 +15,8 @@
 Test theo 2 phase:
 - **Phase 1 — Manual (exploratory)**: đi thủ công qua từng flow trên site để xác nhận actual behavior, làm căn cứ viết/hiệu chỉnh test case (vì site không công bố spec).
 - **Phase 2 — Automation (Playwright + TypeScript)**: automate các test case trong `test-cases.md` bằng framework của repo này (POM, fixtures, multi-env). Đây là mục tiêu chính của dự án.
-- **Browser**: chạy trên **Chromium, Firefox, WebKit** theo cấu hình `playwright.config.ts`; bộ `smoke` chạy trên cả 3, `regression` ưu tiên Chromium.
-- **API**: verify độc lập với UI qua các endpoint REST tại `automationexercise.com/api_list` — phase 1 dùng Postman/curl, phase 2 automate bằng Playwright request context (`services/` layer).
+- **Browser**: chạy trên **Chromium và Firefox** theo cấu hình `playwright.config.ts` (project `chromium`/`firefox`, `testMatch: tests/ui`); bộ `smoke` chạy trên cả 2, `regression` ưu tiên Chromium.
+- **API**: verify độc lập với UI qua các endpoint REST tại `automationexercise.com/api_list` — phase 1 dùng Postman/curl, phase 2 automate bằng Playwright request context (`services/` layer). Chạy ở project riêng `api` (`testMatch: tests/api`, không cần browser) — `npx playwright test --project=api`.
 ## 3. Env
  | Môi trường | URL | Ghi chú |
 |---|---|---|

@@ -1,27 +1,5 @@
 import { BasePage } from "../base.page";
-
-export interface AccountDetails {
-  password: string;
-  title?: "Mr" | "Mrs";
-  day?: string;
-  month?: string;
-  year?: string;
-  newsletter?: boolean;
-  optin?: boolean;
-}
-
-export interface AddressInfo {
-  firstName: string;
-  lastName: string;
-  address1: string;
-  country: string;
-  state: string;
-  city: string;
-  zipcode: string;
-  mobileNumber: string;
-  company?: string;
-  address2?: string;
-}
+import type { AccountDetails, AddressInfo } from "../../models/user.model";
 
 export class SignupPage extends BasePage {
   readonly accountInfoForm = this.page.locator(".login-form"); // form "Enter Account Information" - dấu hiệu nhận biết "đang ở signup" (chỉ tới được qua flow LoginPage.signup(), không có URL riêng)
