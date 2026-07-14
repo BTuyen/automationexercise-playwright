@@ -1,6 +1,6 @@
-import { expect, test } from '../../fixtures/pages.fixture';
+import { expect, testUser as test } from '../../fixtures/user.fixture';
 import { generateUser } from '../../utils/data-generator';
-import { completeSignupForm, signupNewUser } from '../../helpers/signup-flow';
+import { completeSignupForm } from '../../helpers/signup-flow';
 import type { PaymentPage } from '../../pages/checkout/payment.page';
 
 const PRODUCT_NAME = 'Blue Top';
@@ -31,7 +31,7 @@ test.describe('Checkout', () => {
     await productPage.modalViewCartLink.click();
 
     // Act: Ở trang Cart -> Proceed To Checkout khi chưa login -> modal hiện ra -> Register / Login
-    await cartPage.proceedToCheckoutButton.click();
+    await cartPage.proceedToCheckout();
     await expect(cartPage.registerLoginButton).toBeVisible();
     await cartPage.registerLoginButton.click();
 
@@ -44,7 +44,7 @@ test.describe('Checkout', () => {
 
     // Vào lại Cart -> Proceed To Checkout (đã login, không còn modal)
     await productPage.cartLink.click();
-    await cartPage.proceedToCheckoutButton.click();
+    await cartPage.proceedToCheckout();
 
     // Nhập comment -> Place Order
     await checkoutPage.commentInput.fill('Giao trong giờ hành chính');
@@ -60,26 +60,18 @@ test.describe('Checkout', () => {
     await loginPage.deleteAccount();
   });
 
-  test('TC_CHECKOUT_03 | Place order - login before checkout', async ({ loginPage, signupPage, productPage, cartPage, checkoutPage, paymentPage }) => {
-    // Arrange: precondition "Đã có account" -> tạo account trước, logout để mô phỏng "đã có account, giờ login lại"
-    const user = generateUser();
-    await signupNewUser(loginPage, signupPage, user);
-    await expect(signupPage.accountCreatedHeading).toBeVisible();
-    await signupPage.continueAfterAccountCreated();
-    await expect(loginPage.loggedInAs).toContainText(user.name);
-    await loginPage.logoutLink.click();
-    await expect(loginPage.loginForm).toBeVisible();
-
-    // Act: Login bằng account có sẵn
-    await loginPage.login(user.email, user.password);
-    await expect(loginPage.loggedInAs).toContainText(user.name);
+  test('TC_CHECKOUT_03 | Place order - login before checkout', async ({ apiUser, loginPage, productPage, cartPage, checkoutPage, paymentPage }) => {
+    // Arrange: precondition "Đã có account" - account tạo sẵn qua API, chỉ cần login qua UI
+    await loginPage.goto();
+    await loginPage.login(apiUser.email, apiUser.password);
+    await expect(loginPage.loggedInAs).toContainText(apiUser.name);
 
     // Add sản phẩm -> Cart -> Proceed To Checkout
     await productPage.goto();
     await productPage.addProductToCartByName(PRODUCT_NAME);
     await expect(productPage.addedToCartHeading).toBeVisible();
     await productPage.modalViewCartLink.click();
-    await cartPage.proceedToCheckoutButton.click();
+    await cartPage.proceedToCheckout();
 
     // Review order -> Place Order
     await expect(checkoutPage.addressReviewSection).toBeVisible();
@@ -91,7 +83,6 @@ test.describe('Checkout', () => {
     // Assert: hiển thị success message
     await expect(paymentPage.orderPlacedMessage).toBeVisible();
 
-    // Cleanup: xoá account vừa tạo để không tích luỹ user rác trên site demo dùng chung
-    await loginPage.deleteAccount();
+    // Cleanup: fixture apiUser tự xoá account qua API sau test, không cần thao tác UI
   });
 });

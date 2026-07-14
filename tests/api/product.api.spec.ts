@@ -1,4 +1,11 @@
+import fs from 'fs';
+import path from 'path';
 import { expect, test } from '../../fixtures/pages.fixture';
+import { validateSchema } from '../../helpers/schema-validator';
+
+const productListSchema = JSON.parse(
+  fs.readFileSync(path.resolve(__dirname, '../../schemas/product-list.schema.json'), 'utf-8')
+);
 
 test.describe('Product API', () => {
   test('getAllProducts trả responseCode 200 và list không rỗng', async ({ productService }) => {
@@ -17,5 +24,12 @@ test.describe('Product API', () => {
     // nên chỉ assert có ít nhất 1 sản phẩm liên quan, không assert toàn bộ danh sách.
     const hasRelevantMatch = res.products.some((p) => p.name.toLowerCase().includes('top'));
     expect(hasRelevantMatch).toBe(true);
+  });
+
+  test('getAllProducts trả response khớp product-list.schema.json', async ({ productService }) => {
+    const res = await productService.getAllProducts();
+
+    const { valid, errors } = validateSchema(productListSchema, res);
+    expect(valid, JSON.stringify(errors)).toBe(true);
   });
 });

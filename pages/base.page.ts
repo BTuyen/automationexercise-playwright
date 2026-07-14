@@ -8,8 +8,10 @@ export abstract class BasePage {
   }
 
   get cartLink() {
-    // exact: true - nếu không sẽ match luôn "View Cart" trong modal Added! (dù đã đóng, DOM vẫn còn)
-    return this.page.getByRole("link", { name: "Cart", exact: true });
+    // Không dùng exact:true: icon FontAwesome render bằng CSS ::before khiến accessible name
+    // có thể lẫn ký tự glyph vô hình, làm so khớp chính xác "Cart" fail không ổn định.
+    // Scope theo nav bar để phân biệt với "View Cart" trong modal Added! (dù đã đóng, DOM vẫn còn).
+    return this.page.locator("ul.nav.navbar-nav").getByRole("link", { name: "Cart" });
   }
 
   get cartModal() {
@@ -47,6 +49,14 @@ export abstract class BasePage {
 
   async goto(path: string) {
     await this.page.goto(path, { waitUntil: "domcontentloaded" });
+  }
+
+  // Site thật đôi khi redirect (login/signup xong) và render nav chậm hơn dưới tải cao
+  // (nhiều browser project chạy song song) -> chờ 'load' trước khi thao tác tiếp với nav,
+  // tránh race "click ngay sau navigate" gây timeout dù element rồi cũng xuất hiện.
+  // Không dùng 'networkidle': site có ad network poll liên tục, dễ treo vô thời hạn.
+  async waitForPageReady() {
+    await this.page.waitForLoadState("load");
   }
 
   async deleteAccount() {

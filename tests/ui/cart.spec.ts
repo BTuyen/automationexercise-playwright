@@ -1,17 +1,14 @@
-import { expect, test } from '../../fixtures/pages.fixture';
-import { signupNewUser } from '../../helpers/signup-flow';
-import { generateUser } from '../../utils/data-generator';
+import { expect, testUser as test } from '../../fixtures/user.fixture';
 
 const PRODUCT_NAMES = ['Blue Top', 'Men Tshirt', 'Sleeveless Dress', 'Casual Dress', 'Evening Dress', 'Summer Dress'];
 
 test.describe('Cart Functionality', () => {
-  test('TC_CART_01 | Add one item to cart', async ({ loginPage, signupPage, productPage, cartPage }) => {
-    // Arrange: precondition "đã đăng nhập; ở trang Products"
-    const user = generateUser();
-    await signupNewUser(loginPage, signupPage, user);
-    await expect(signupPage.accountCreatedHeading).toBeVisible();
-    await signupPage.continueAfterAccountCreated();
-    await expect(loginPage.loggedInAs).toContainText(user.name);
+  test('TC_CART_01 | Add one item to cart', async ({ apiUser, loginPage, productPage, cartPage }) => {
+    // Arrange: precondition "đã đăng nhập; ở trang Products" - account tạo sẵn qua API
+    // (nhanh hơn UI ~10 lần), chỉ cần login qua UI để browser có session
+    await loginPage.goto();
+    await loginPage.login(apiUser.email, apiUser.password);
+    await expect(loginPage.loggedInAs).toContainText(apiUser.name);
 
     await productPage.goto();
     const expectedPrice = await productPage.getProductPrice(PRODUCT_NAMES[0]);
@@ -27,17 +24,14 @@ test.describe('Cart Functionality', () => {
     expect(await cartPage.getProductQuantity(PRODUCT_NAMES[0])).toBe(1);
     expect(await cartPage.getProductTotalPrice(PRODUCT_NAMES[0])).toBe(expectedPrice);
 
-    // Cleanup: xoá account vừa tạo để không tích luỹ user rác trên site demo dùng chung
-    await loginPage.deleteAccount();
+    // Cleanup: fixture apiUser tự xoá account qua API sau test, không cần thao tác UI
   });
 
-  test('TC_CART_02 | Add multiple items to cart', async ({ loginPage, signupPage, productPage, cartPage }) => {
-    // Arrange: precondition "đã đăng nhập; ở trang Products"
-    const user = generateUser();
-    await signupNewUser(loginPage, signupPage, user);
-    await expect(signupPage.accountCreatedHeading).toBeVisible();
-    await signupPage.continueAfterAccountCreated();
-    await expect(loginPage.loggedInAs).toContainText(user.name);
+  test('TC_CART_02 | Add multiple items to cart', async ({ apiUser, loginPage, productPage, cartPage }) => {
+
+    await loginPage.goto();
+    await loginPage.login(apiUser.email, apiUser.password);
+    await expect(loginPage.loggedInAs).toContainText(apiUser.name);
 
     await productPage.goto();
     const [firstProduct, secondProduct] = PRODUCT_NAMES;
@@ -64,18 +58,13 @@ test.describe('Cart Functionality', () => {
     expect(await cartPage.getProductPrice(secondProduct)).toBe(secondPrice);
     expect(await cartPage.getProductQuantity(secondProduct)).toBe(1);
     expect(await cartPage.getProductTotalPrice(secondProduct)).toBe(secondPrice);
-
-    // Cleanup: xoá account vừa tạo để không tích luỹ user rác trên site demo dùng chung
-    await loginPage.deleteAccount();
   });
 
-  test('TC_CART_03 | Increase quantity before add to cart', async ({ loginPage, signupPage, productPage, productDetailPage, cartPage }) => {
-    // Arrange: precondition "ở trang chi tiết sản phẩm; giỏ hàng rỗng"
-    const user = generateUser();
-    await signupNewUser(loginPage, signupPage, user);
-    await expect(signupPage.accountCreatedHeading).toBeVisible();
-    await signupPage.continueAfterAccountCreated();
-    await expect(loginPage.loggedInAs).toContainText(user.name);
+  test('TC_CART_03 | Increase quantity before add to cart', async ({ apiUser, loginPage, productPage, productDetailPage, cartPage }) => {
+
+    await loginPage.goto();
+    await loginPage.login(apiUser.email, apiUser.password);
+    await expect(loginPage.loggedInAs).toContainText(apiUser.name);
 
     await productPage.goto();
     await productPage.viewProductByName(PRODUCT_NAMES[0]);
@@ -89,18 +78,13 @@ test.describe('Cart Functionality', () => {
     expect(await cartPage.getProductQuantity(PRODUCT_NAMES[0])).toBe(quantityToAdd);
     const unitPrice = await cartPage.getProductPrice(PRODUCT_NAMES[0]);
     expect(await cartPage.getProductTotalPrice(PRODUCT_NAMES[0])).toBe(unitPrice * quantityToAdd);
-
-    // Cleanup: xoá account vừa tạo để không tích luỹ user rác trên site demo dùng chung
-    await loginPage.deleteAccount();
   });
 
-  test('TC_CART_04 | Add existing product to cart accumulates quantity', async ({ loginPage, signupPage, productPage, productDetailPage, cartPage }) => {
+  test('TC_CART_04 | Add existing product to cart accumulates quantity', async ({ apiUser, loginPage, productPage, productDetailPage, cartPage }) => {
     // Arrange: precondition "Giỏ đã có sản phẩm A với quantity = 2"
-    const user = generateUser();
-    await signupNewUser(loginPage, signupPage, user);
-    await expect(signupPage.accountCreatedHeading).toBeVisible();
-    await signupPage.continueAfterAccountCreated();
-    await expect(loginPage.loggedInAs).toContainText(user.name);
+    await loginPage.goto();
+    await loginPage.login(apiUser.email, apiUser.password);
+    await expect(loginPage.loggedInAs).toContainText(apiUser.name);
 
     await productPage.goto();
     await productPage.viewProductByName(PRODUCT_NAMES[0]);
@@ -116,19 +100,14 @@ test.describe('Cart Functionality', () => {
     // Assert: quantity = 5 (cộng dồn 2+3), không tạo dòng trùng
     await expect(cartPage.rowByProductName(PRODUCT_NAMES[0])).toHaveCount(1);
     expect(await cartPage.getProductQuantity(PRODUCT_NAMES[0])).toBe(5);
-
-    // Cleanup: xoá account vừa tạo để không tích luỹ user rác trên site demo dùng chung
-    await loginPage.deleteAccount();
   });
 
-  test('TC_CART_05 | Remove product from cart', async ({ loginPage, signupPage, productPage, cartPage }) => {
+  test('TC_CART_05 | Remove product from cart', async ({ apiUser, loginPage, productPage, cartPage }) => {
     // Arrange: precondition "Ở trang Cart, có ít nhất 1 sản phẩm" -> cần thêm sản phẩm thứ 2
     // để verify đúng expected "các dòng còn lại giữ nguyên" sau khi xoá
-    const user = generateUser();
-    await signupNewUser(loginPage, signupPage, user);
-    await expect(signupPage.accountCreatedHeading).toBeVisible();
-    await signupPage.continueAfterAccountCreated();
-    await expect(loginPage.loggedInAs).toContainText(user.name);
+    await loginPage.goto();
+    await loginPage.login(apiUser.email, apiUser.password);
+    await expect(loginPage.loggedInAs).toContainText(apiUser.name);
 
     await productPage.goto();
     const [productToRemove, productToKeep] = PRODUCT_NAMES;
@@ -150,18 +129,13 @@ test.describe('Cart Functionality', () => {
     await expect(cartPage.rowByProductName(productToKeep)).toBeVisible();
     expect(await cartPage.getProductPrice(productToKeep)).toBe(keptPrice);
     expect(await cartPage.getProductQuantity(productToKeep)).toBe(1);
-
-    // Cleanup: xoá account vừa tạo để không tích luỹ user rác trên site demo dùng chung
-    await loginPage.deleteAccount();
   });
 
-  test('TC_CART_06 | Add to cart from Recommended Items section', async ({ homePage, loginPage, signupPage, cartPage }) => {
+  test('TC_CART_06 | Add to cart from Recommended Items section', async ({ apiUser, homePage, loginPage, cartPage }) => {
     // Arrange: precondition "ở trang chủ"
-    const user = generateUser();
-    await signupNewUser(loginPage, signupPage, user);
-    await expect(signupPage.accountCreatedHeading).toBeVisible();
-    await signupPage.continueAfterAccountCreated();
-    await expect(loginPage.loggedInAs).toContainText(user.name);
+    await loginPage.goto();
+    await loginPage.login(apiUser.email, apiUser.password);
+    await expect(loginPage.loggedInAs).toContainText(apiUser.name);
 
     await homePage.goto();
     // Không hardcode tên sản phẩm: Recommended Items là carousel tự xoay, sản phẩm hiển thị
@@ -181,21 +155,11 @@ test.describe('Cart Functionality', () => {
     expect(await cartPage.getProductPrice(recommendedProductName)).toBe(expectedPrice);
     expect(await cartPage.getProductQuantity(recommendedProductName)).toBe(1);
     expect(await cartPage.getProductTotalPrice(recommendedProductName)).toBe(expectedPrice);
-
-    // Cleanup: xoá account vừa tạo để không tích luỹ user rác trên site demo dùng chung
-    await loginPage.deleteAccount();
   });
 
-  test('TC_CART_07 | Cart persists after login', async ({ loginPage, signupPage, productPage, cartPage }) => {
-    // Arrange: precondition "chưa login; đã add sản phẩm vào giỏ" -> cần 1 account có sẵn
-    // để login ở bước 2, nên tạo trước rồi logout để quay về trạng thái "chưa login"
-    const user = generateUser();
-    await signupNewUser(loginPage, signupPage, user);
-    await expect(signupPage.accountCreatedHeading).toBeVisible();
-    await signupPage.continueAfterAccountCreated();
-    await expect(loginPage.loggedInAs).toContainText(user.name);
-    await loginPage.logoutLink.click();
-    await expect(loginPage.loginForm).toBeVisible();
+  test('TC_CART_07 | Cart persists after login', async ({ apiUser, loginPage, productPage, cartPage }) => {
+    // Arrange: precondition "chưa login; đã add sản phẩm vào giỏ" -> account tạo qua API
+    // (browser chưa từng login, không cần logout để "quay về" trạng thái chưa login)
 
     // Act: Add sản phẩm vào giỏ khi chưa login
     await productPage.goto();
@@ -207,8 +171,8 @@ test.describe('Cart Functionality', () => {
 
     // Login với account có sẵn
     await loginPage.goto();
-    await loginPage.login(user.email, user.password);
-    await expect(loginPage.loggedInAs).toContainText(user.name);
+    await loginPage.login(apiUser.email, apiUser.password);
+    await expect(loginPage.loggedInAs).toContainText(apiUser.name);
 
     // View Cart
     await productPage.cartLink.click();
@@ -218,8 +182,5 @@ test.describe('Cart Functionality', () => {
     expect(await cartPage.getProductPrice(productName)).toBe(expectedPrice);
     expect(await cartPage.getProductQuantity(productName)).toBe(1);
     expect(await cartPage.getProductTotalPrice(productName)).toBe(expectedPrice);
-
-    // Cleanup: xoá account vừa tạo để không tích luỹ user rác trên site demo dùng chung
-    await loginPage.deleteAccount();
   });
 });

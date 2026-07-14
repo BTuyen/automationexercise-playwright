@@ -9,6 +9,23 @@ export class CartPage extends BasePage {
   readonly continueOnCartModalButton = this.checkoutModal.getByRole("button", { name: "Continue On Cart" });
   readonly registerLoginButton = this.checkoutModal.getByRole('link', {name: 'Register / Login'});
 
+  // "Proceed To Checkout" không có href, phụ thuộc hoàn toàn vào JS click handler của site.
+  async proceedToCheckout() {
+    // Hàm này luôn được gọi ngay sau 1 click gây navigate khác (View Cart / Cart link).
+    // Đã tận mắt gặp: bỏ wait này thì .click() không hề lỗi (element vẫn actionable), nhưng
+    // checkoutModal đứng im "hidden" đủ 30s rồi timeout - tức handler JS của nút chưa kịp bind
+    // lúc click, không phải do click bị chặn/che (nếu bị che thì chính .click() đã throw trước).
+    // Playwright không tự chờ giúp vì đây là JS handler-binding, nằm ngoài mọi actionability check.
+    await this.waitForPageReady();
+
+    await this.proceedToCheckoutButton.click();
+
+    // Đích đến khác nhau tuỳ trạng thái login: chưa login -> mở checkoutModal; đã login -> chuyển
+    // thẳng sang /checkout (nhận diện bằng ".checkout-information"). Chờ 1 trong 2 bằng locator.or()
+    // thay vì đoán trước sẽ đi nhánh nào.
+    await this.checkoutModal.or(this.page.locator(".checkout-information")).waitFor({ state: "visible" });
+  }
+
   rowByProductName(productName: string) {
     return this.cartItems.locator("tr").filter({ hasText: productName });
   }
