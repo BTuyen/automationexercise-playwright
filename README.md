@@ -1,5 +1,7 @@
 # AutomationExercise – Playwright + TypeScript
 
+![Playwright Tests](https://github.com/BTuyen/automationexercise-playwright/actions/workflows/playwright.yml/badge.svg)
+
 Automation test framework cho [automationexercise.com](https://automationexercise.com) theo mô hình **Page Object Model (POM)**, hỗ trợ **UI + API testing**, chạy đa môi trường **Staging / UAT / Prod**.
 
 > Trạng thái: đã dựng cấu trúc, chưa code.
