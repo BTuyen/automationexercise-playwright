@@ -10,7 +10,10 @@ export default defineConfig({
   workers: process.env.CI ? 1 : ENV.WORKERS, // FIX: tương tự
   timeout: ENV.TIMEOUT, // timeout mỗi test
 
-  reporter: [["html", { open: "never" }]],
+  reporter: [
+    ["html", { open: "never" }],
+    ["allure-playwright", { resultsDir: "allure-results" }],
+  ],
 
   use: {
     baseURL: ENV.BASE_URL, // FIX: từ .env → page.goto('/') tự ghép URL

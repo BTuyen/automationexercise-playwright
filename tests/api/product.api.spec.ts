@@ -8,14 +8,14 @@ const productListSchema = JSON.parse(
 );
 
 test.describe('Product API', () => {
-  test('getAllProducts trả responseCode 200 và list không rỗng', async ({ productService }) => {
+  test('getAllProducts trả responseCode 200 và list không rỗng', { tag: '@smoke' }, async ({ productService }) => {
     const res = await productService.getAllProducts();
 
     expect(res.responseCode).toBe(200);
     expect(res.products.length).toBeGreaterThan(0);
   });
 
-  test('searchProduct("top") trả responseCode 200 và có kết quả liên quan', async ({ productService }) => {
+  test('searchProduct("top") trả responseCode 200 và có kết quả liên quan', { tag: '@smoke' }, async ({ productService }) => {
     const res = await productService.searchProduct('top');
 
     expect(res.responseCode).toBe(200);
@@ -26,7 +26,7 @@ test.describe('Product API', () => {
     expect(hasRelevantMatch).toBe(true);
   });
 
-  test('getAllProducts trả response khớp product-list.schema.json', async ({ productService }) => {
+  test('getAllProducts trả response khớp product-list.schema.json', { tag: '@smoke' }, async ({ productService }) => {
     const res = await productService.getAllProducts();
 
     const { valid, errors } = validateSchema(productListSchema, res);

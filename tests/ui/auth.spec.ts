@@ -10,7 +10,7 @@ const testData = CSVHandling.readCSVFile(csvFilePath);
 const dataFor = (id: string) => testData.find((row) => row.testcaseID === id);
 
 test.describe('Auth', () => {
-  test('TC_AUTH_01 | should signup successfully with valid email', async ({ loginPage, signupPage }) => {
+  test('TC_AUTH_01 | should signup successfully with valid email', { tag: '@smoke' }, async ({ loginPage, signupPage }) => {
     const user = generateUser();
     await signupNewUser(loginPage, signupPage, user);
 
@@ -23,7 +23,7 @@ test.describe('Auth', () => {
     await loginPage.deleteAccount();
   });
 
-  test('TC_AUTH_02 | should show error when signup with an already existing email', async ({ loginPage, signupPage }) => {
+  test('TC_AUTH_02 | should show error when signup with an already existing email', { tag: '@regression' }, async ({ loginPage, signupPage }) => {
     // Arrange: account phải được tạo động ngay trong test để chắc chắn email "đã tồn tại"
     const user = generateUser();
     await signupNewUser(loginPage, signupPage, user);
@@ -42,7 +42,7 @@ test.describe('Auth', () => {
     await loginPage.deleteAccount();
   });
 
-  test('TC_AUTH_03 | should login successfully with valid credentials', async ({ loginPage, signupPage }) => {
+  test('TC_AUTH_03 | should login successfully with valid credentials', { tag: '@smoke' }, async ({ loginPage, signupPage }) => {
     // Arrange: tự tạo account rồi logout
     const user = generateUser();
     await signupNewUser(loginPage, signupPage, user);
@@ -60,14 +60,14 @@ test.describe('Auth', () => {
     await loginPage.deleteAccount();
   });
 
-  test('TC_AUTH_04 | should show error with non-existent credentials', async ({ loginPage }) => {
+  test('TC_AUTH_04 | should show error with non-existent credentials', { tag: '@smoke' }, async ({ loginPage }) => {
     const data = dataFor('TC_AUTH_04');
     await loginPage.goto();
     await loginPage.login(data.email, data.password);
     await expect(loginPage.errorMessage).toBeVisible();
   });
 
-  test('TC_AUTH_05 | should logout and clear session', async ({ loginPage, signupPage }) => {
+  test('TC_AUTH_05 | should logout and clear session', { tag: '@smoke' }, async ({ loginPage, signupPage }) => {
     // Arrange: tạo account (sau signup đã ở trạng thái logged in)
     const user = generateUser();
     await signupNewUser(loginPage, signupPage, user);
@@ -86,7 +86,7 @@ test.describe('Auth', () => {
     await loginPage.deleteAccount();
   });
 
-  test('TC_AUTH_06 | should signup successfully with plus-tag/subdomain email (EP valid class)', async ({ loginPage, signupPage }) => {
+  test('TC_AUTH_06 | should signup successfully with plus-tag/subdomain email (EP valid class)', { tag: '@regression' }, async ({ loginPage, signupPage }) => {
     const user = { ...generateUser(), email: generatePlusTagEmail() };
     await signupNewUser(loginPage, signupPage, user);
 
@@ -98,7 +98,7 @@ test.describe('Auth', () => {
     await loginPage.deleteAccount();
   });
 
-  test('TC_AUTH_07 | should reject signup email missing @ (EP invalid class)', async ({ loginPage }) => {
+  test('TC_AUTH_07 | should reject signup email missing @ (EP invalid class)', { tag: '@regression' }, async ({ loginPage }) => {
     const data = dataFor('TC_AUTH_07');
     await loginPage.goto();
     await loginPage.signup(data.name, data.email);
@@ -108,7 +108,7 @@ test.describe('Auth', () => {
     await expect(loginPage.signupForm).toBeVisible();
   });
 
-  test('TC_AUTH_08 | should reject signup email missing domain (EP invalid class)', async ({ loginPage }) => {
+  test('TC_AUTH_08 | should reject signup email missing domain (EP invalid class)', { tag: '@regression' }, async ({ loginPage }) => {
     const data = dataFor('TC_AUTH_08');
     await loginPage.goto();
     await loginPage.signup(data.name, data.email);

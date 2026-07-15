@@ -22,7 +22,7 @@ async function payWithCard(paymentPage: PaymentPage) {
 }
 
 test.describe('Checkout', () => {
-  test('TC_CHECKOUT_01 | Place order - register during checkout', async ({ loginPage, signupPage, productPage, cartPage, checkoutPage, paymentPage }) => {
+  test('TC_CHECKOUT_01 | Place order - register during checkout', { tag: '@smoke' }, async ({ loginPage, signupPage, productPage, cartPage, checkoutPage, paymentPage }) => {
     // Arrange: precondition "Chưa login; giỏ đã có sản phẩm"
     const user = generateUser();
     await productPage.goto();
@@ -60,7 +60,7 @@ test.describe('Checkout', () => {
     await loginPage.deleteAccount();
   });
 
-  test('TC_CHECKOUT_03 | Place order - login before checkout', async ({ apiUser, loginPage, productPage, cartPage, checkoutPage, paymentPage }) => {
+  test('TC_CHECKOUT_03 | Place order - login before checkout', { tag: '@smoke' }, async ({ apiUser, loginPage, productPage, cartPage, checkoutPage, paymentPage }) => {
     // Arrange: precondition "Đã có account" - account tạo sẵn qua API, chỉ cần login qua UI
     await loginPage.goto();
     await loginPage.login(apiUser.email, apiUser.password);

@@ -25,10 +25,13 @@ jobs:
       run: npm ci
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps chromium firefox
+    # PR: chỉ chạy @smoke (~vài chục giây) để feedback nhanh trước khi merge.
+    # push vào main/master hoặc workflow_dispatch (chạy tay): full suite (smoke + regression) -
+    # main là nhánh release nên cần coverage đầy đủ, không chỉ health-check.
     - name: Run API tests
-      run: npx playwright test --project=api
+      run: npx playwright test --project=api ${{ github.event_name == 'pull_request' && '--grep @smoke' || '' }}
     - name: Run UI tests
-      run: npx playwright test --project=chromium --project=firefox
+      run: npx playwright test --project=chromium --project=firefox ${{ github.event_name == 'pull_request' && '--grep @smoke' || '' }}
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:

@@ -3,7 +3,7 @@ import { expect, testUser as test } from '../../fixtures/user.fixture';
 const PRODUCT_NAMES = ['Blue Top', 'Men Tshirt', 'Sleeveless Dress', 'Casual Dress', 'Evening Dress', 'Summer Dress'];
 
 test.describe('Cart Functionality', () => {
-  test('TC_CART_01 | Add one item to cart', async ({ apiUser, loginPage, productPage, cartPage }) => {
+  test('TC_CART_01 | Add one item to cart', { tag: '@smoke' }, async ({ apiUser, loginPage, productPage, cartPage }) => {
     // Arrange: precondition "đã đăng nhập; ở trang Products" - account tạo sẵn qua API
     // (nhanh hơn UI ~10 lần), chỉ cần login qua UI để browser có session
     await loginPage.goto();
@@ -27,7 +27,7 @@ test.describe('Cart Functionality', () => {
     // Cleanup: fixture apiUser tự xoá account qua API sau test, không cần thao tác UI
   });
 
-  test('TC_CART_02 | Add multiple items to cart', async ({ apiUser, loginPage, productPage, cartPage }) => {
+  test('TC_CART_02 | Add multiple items to cart', { tag: '@regression' }, async ({ apiUser, loginPage, productPage, cartPage }) => {
 
     await loginPage.goto();
     await loginPage.login(apiUser.email, apiUser.password);
@@ -60,7 +60,7 @@ test.describe('Cart Functionality', () => {
     expect(await cartPage.getProductTotalPrice(secondProduct)).toBe(secondPrice);
   });
 
-  test('TC_CART_03 | Increase quantity before add to cart', async ({ apiUser, loginPage, productPage, productDetailPage, cartPage }) => {
+  test('TC_CART_03 | Increase quantity before add to cart', { tag: '@smoke' }, async ({ apiUser, loginPage, productPage, productDetailPage, cartPage }) => {
 
     await loginPage.goto();
     await loginPage.login(apiUser.email, apiUser.password);
@@ -80,7 +80,7 @@ test.describe('Cart Functionality', () => {
     expect(await cartPage.getProductTotalPrice(PRODUCT_NAMES[0])).toBe(unitPrice * quantityToAdd);
   });
 
-  test('TC_CART_04 | Add existing product to cart accumulates quantity', async ({ apiUser, loginPage, productPage, productDetailPage, cartPage }) => {
+  test('TC_CART_04 | Add existing product to cart accumulates quantity', { tag: '@regression' }, async ({ apiUser, loginPage, productPage, productDetailPage, cartPage }) => {
     // Arrange: precondition "Giỏ đã có sản phẩm A với quantity = 2"
     await loginPage.goto();
     await loginPage.login(apiUser.email, apiUser.password);
@@ -102,7 +102,7 @@ test.describe('Cart Functionality', () => {
     expect(await cartPage.getProductQuantity(PRODUCT_NAMES[0])).toBe(5);
   });
 
-  test('TC_CART_05 | Remove product from cart', async ({ apiUser, loginPage, productPage, cartPage }) => {
+  test('TC_CART_05 | Remove product from cart', { tag: '@regression' }, async ({ apiUser, loginPage, productPage, cartPage }) => {
     // Arrange: precondition "Ở trang Cart, có ít nhất 1 sản phẩm" -> cần thêm sản phẩm thứ 2
     // để verify đúng expected "các dòng còn lại giữ nguyên" sau khi xoá
     await loginPage.goto();
@@ -131,7 +131,7 @@ test.describe('Cart Functionality', () => {
     expect(await cartPage.getProductQuantity(productToKeep)).toBe(1);
   });
 
-  test('TC_CART_06 | Add to cart from Recommended Items section', async ({ apiUser, homePage, loginPage, cartPage }) => {
+  test('TC_CART_06 | Add to cart from Recommended Items section', { tag: '@regression' }, async ({ apiUser, homePage, loginPage, cartPage }) => {
     // Arrange: precondition "ở trang chủ"
     await loginPage.goto();
     await loginPage.login(apiUser.email, apiUser.password);
@@ -157,7 +157,7 @@ test.describe('Cart Functionality', () => {
     expect(await cartPage.getProductTotalPrice(recommendedProductName)).toBe(expectedPrice);
   });
 
-  test('TC_CART_07 | Cart persists after login', async ({ apiUser, loginPage, productPage, cartPage }) => {
+  test('TC_CART_07 | Cart persists after login', { tag: '@regression' }, async ({ apiUser, loginPage, productPage, cartPage }) => {
     // Arrange: precondition "chưa login; đã add sản phẩm vào giỏ" -> account tạo qua API
     // (browser chưa từng login, không cần logout để "quay về" trạng thái chưa login)
 
