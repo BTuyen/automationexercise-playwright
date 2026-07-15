@@ -4,7 +4,7 @@
 
 Automation test framework cho [automationexercise.com](https://automationexercise.com) theo mô hình **Page Object Model (POM)**, hỗ trợ **UI + API testing**, chạy đa môi trường **Staging / UAT / Prod**.
 
-> Trạng thái: đã dựng cấu trúc, chưa code.
+> Trạng thái: 46 test (UI + API) chạy trên CI (GitHub Actions).
 
 ## Cấu trúc thư mục
 
